@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [timeRange, setTimeRange] = useState('monthly');
   const [chartType, setChartType] = useState('line');
 
-  // Theme styles
+  // Theme styles - Fixed text colors for dark/light mode
   const cardBg = isDark ? 'bg-slate-900' : 'bg-white';
   const cardBorder = isDark ? 'border-slate-800' : 'border-gray-200';
   const cardText = isDark ? 'text-white' : 'text-gray-900';
@@ -122,7 +122,7 @@ const Dashboard = () => {
     { id: 4, name: 'Keyboard', stock: 4 },
   ];
 
-  // Status colors
+  // Status colors - Fixed for dark/light mode
   const getStatusColor = (status) => {
     const colors = {
       Delivered: isDark ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800',
@@ -133,12 +133,24 @@ const Dashboard = () => {
     return colors[status] || colors.Processing;
   };
 
-  // Chart colors
+  // Chart colors - Fixed for dark/light mode
   const chartColors = {
     revenue: isDark ? '#3b82f6' : '#2563eb',
     grid: isDark ? '#374151' : '#e5e7eb',
     tooltipBg: isDark ? '#1f2937' : '#ffffff',
     tooltipText: isDark ? '#f3f4f6' : '#111827',
+    axisText: isDark ? '#9ca3af' : '#6b7280',
+  };
+
+  // Button text colors for toggle buttons
+  const getToggleButtonClass = (isActive, range) => {
+    const baseClass = "px-2 md:px-3 py-1 rounded-md capitalize text-xs md:text-sm transition-all duration-200";
+    
+    if (isActive) {
+      return `${baseClass} bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm`;
+    } else {
+      return `${baseClass} text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-slate-700/50`;
+    }
   };
 
   return (
@@ -172,31 +184,23 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 md:mb-6">
             <h3 className={`text-base md:text-lg font-semibold ${cardText} mb-2 sm:mb-0`}>Revenue Analytics</h3>
             <div className="flex items-center space-x-2 md:space-x-4">
-              <div className="flex bg-gray-100 dark:bg-slate-800 rounded-lg p-1 text-xs md:text-sm">
+              <div className="flex bg-gray-100 dark:bg-slate-800 rounded-lg p-1">
                 {['daily', 'weekly', 'monthly'].map((range) => (
                   <button
                     key={range}
                     onClick={() => setTimeRange(range)}
-                    className={`px-2 md:px-3 py-1 rounded-md capitalize ${
-                      timeRange === range
-                        ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
-                        : 'text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-slate-700/50'
-                    }`}
+                    className={getToggleButtonClass(timeRange === range, range)}
                   >
                     {range}
                   </button>
                 ))}
               </div>
-              <div className="flex bg-gray-100 dark:bg-slate-800 rounded-lg p-1 text-xs md:text-sm">
+              <div className="flex bg-gray-100 dark:bg-slate-800 rounded-lg p-1">
                 {['line', 'bar'].map((type) => (
                   <button
                     key={type}
                     onClick={() => setChartType(type)}
-                    className={`px-2 md:px-3 py-1 rounded-md capitalize ${
-                      chartType === type
-                        ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
-                        : 'text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-slate-700/50'
-                    }`}
+                    className={getToggleButtonClass(chartType === type, type)}
                   >
                     {type}
                   </button>
@@ -212,14 +216,14 @@ const Dashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                   <XAxis 
                     dataKey="name" 
-                    stroke={secondaryText}
+                    stroke={chartColors.axisText}
                     fontSize={10}
-                    tick={{ fill: secondaryText }}
+                    tick={{ fill: chartColors.axisText }}
                   />
                   <YAxis 
-                    stroke={secondaryText}
+                    stroke={chartColors.axisText}
                     fontSize={10}
-                    tick={{ fill: secondaryText }}
+                    tick={{ fill: chartColors.axisText }}
                   />
                   <Tooltip
                     contentStyle={{
@@ -246,14 +250,14 @@ const Dashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                   <XAxis 
                     dataKey="name" 
-                    stroke={secondaryText}
+                    stroke={chartColors.axisText}
                     fontSize={10}
-                    tick={{ fill: secondaryText }}
+                    tick={{ fill: chartColors.axisText }}
                   />
                   <YAxis 
-                    stroke={secondaryText}
+                    stroke={chartColors.axisText}
                     fontSize={10}
-                    tick={{ fill: secondaryText }}
+                    tick={{ fill: chartColors.axisText }}
                   />
                   <Tooltip
                     contentStyle={{
@@ -344,10 +348,10 @@ const Dashboard = () => {
                     <div className="flex items-center space-x-1 md:space-x-2">
                       <p className={`${cardText} font-medium text-sm md:text-base whitespace-nowrap`}>{order.amount}</p>
                       <button className={`p-1 rounded ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`}>
-                        <FiEye className="w-3 h-3 md:w-4 md:h-4" />
+                        <FiEye className={`w-3 h-3 md:w-4 md:h-4 ${isDark ? 'text-gray-300' : 'text-gray-600'}`} />
                       </button>
                     </div>
-                  </div>
+                  </div>  
                 </div>
               </div>
             ))}
