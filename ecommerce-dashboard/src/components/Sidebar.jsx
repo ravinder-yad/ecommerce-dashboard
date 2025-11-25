@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   FiHome,
   FiPackage,
@@ -18,19 +19,21 @@ import {
 
 const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
   const { isDark } = useTheme();
-  const [activeItem, setActiveItem] = useState('Dashboard');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [activeItem, setActiveItem] = useState(location.pathname);
 
   const menuItems = [
-    { name: 'Dashboard', icon: FiHome, section: 'Main' },
-    { name: 'Products', icon: FiPackage, section: 'Main' },
-    { name: 'Orders', icon: FiShoppingCart, section: 'Main' },
-    { name: 'Customers', icon: FiUsers, section: 'Main' },
-    { name: 'Categories', icon: FiFolder, section: 'Catalog' },
-    { name: 'Coupons', icon: FiTag, section: 'Catalog' },
-    { name: 'Reviews', icon: FiStar, section: 'Catalog' },
-    { name: 'Analytics', icon: FiBarChart2, section: 'Analytics' },
-    { name: 'Settings', icon: FiSettings, section: 'Settings' },
-    { name: 'Admin Users', icon: FiUser, section: 'Settings' },
+    { name: 'Dashboard', icon: FiHome, path: '/dashboard', section: 'Main' },
+    { name: 'Products', icon: FiPackage, path: '/products', section: 'Main' },
+    { name: 'Orders', icon: FiShoppingCart, path: '/orders', section: 'Main' },
+    { name: 'Customers', icon: FiUsers, path: '/customers', section: 'Main' },
+    { name: 'Categories', icon: FiFolder, path: '/categories', section: 'Catalog' },
+    { name: 'Coupons', icon: FiTag, path: '/coupons', section: 'Catalog' },
+    { name: 'Reviews', icon: FiStar, path: '/reviews', section: 'Catalog' },
+    { name: 'Analytics', icon: FiBarChart2, path: '/analytics', section: 'Analytics' },
+    { name: 'Settings', icon: FiSettings, path: '/settings', section: 'Settings' },
+    { name: 'Admin Users', icon: FiUser, path: '/admin-users', section: 'Settings' },
   ];
 
   const sections = {
@@ -40,11 +43,18 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     'Settings': menuItems.filter(item => item.section === 'Settings'),
   };
 
-  const handleItemClick = (itemName) => {
-    setActiveItem(itemName);
+  const handleItemClick = (item) => {
+    setActiveItem(item.path);
+    navigate(item.path);
     if (window.innerWidth < 768) {
       setIsMobileOpen(false);
     }
+  };
+
+  const handleLogout = () => {
+    // Handle logout logic here
+    console.log('Logging out...');
+    // navigate('/login');
   };
 
   const sidebarBg = isDark ? 'bg-slate-900' : 'bg-white';
@@ -75,7 +85,13 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
         {/* Logo Section */}
         <div className={`p-4 md:p-6 border-b ${borderColor} flex-shrink-0`}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+            <div 
+              className="flex items-center space-x-3 cursor-pointer"
+              onClick={() => {
+                navigate('/dashboard');
+                setActiveItem('/dashboard');
+              }}
+            >
               <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <FiShoppingCart className="text-white text-sm md:text-lg" />
               </div>
@@ -104,19 +120,20 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
               <div className="space-y-1">
                 {items.map((item) => {
                   const IconComponent = item.icon;
+                  const isActive = activeItem === item.path;
                   return (
                     <button
                       key={item.name}
-                      onClick={() => handleItemClick(item.name)}
+                      onClick={() => handleItemClick(item)}
                       className={`
                         w-full flex items-center space-x-2 md:space-x-3 px-2 md:px-3 py-2 md:py-3 rounded-lg text-left transition-all duration-200
-                        ${activeItem === item.name
+                        ${isActive
                           ? 'bg-blue-600 text-white shadow-lg'
                           : `${textColor} ${hoverBg} hover:text-gray-900 dark:hover:text-white`
                         }
                       `}
                     >
-                      <IconComponent className={`text-base md:text-lg ${activeItem === item.name ? 'text-white' : iconColor}`} />
+                      <IconComponent className={`text-base md:text-lg ${isActive ? 'text-white' : iconColor}`} />
                       <span className="font-medium text-sm md:text-base">{item.name}</span>
                     </button>
                   );
@@ -128,11 +145,14 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
 
         {/* Logout Button - Fixed at bottom */}
         <div className={`p-3 md:p-4 border-t ${borderColor} flex-shrink-0`}>
-          <button className={`
-            w-full flex items-center space-x-2 md:space-x-3 px-2 md:px-3 py-2 md:py-3 rounded-lg
-            ${textColor} ${hoverBg} hover:text-gray-900 dark:hover:text-white
-            transition-all duration-200
-          `}>
+          <button 
+            onClick={handleLogout}
+            className={`
+              w-full flex items-center space-x-2 md:space-x-3 px-2 md:px-3 py-2 md:py-3 rounded-lg
+              ${textColor} ${hoverBg} hover:text-gray-900 dark:hover:text-white
+              transition-all duration-200
+            `}
+          >
             <FiLogOut className={`text-base md:text-lg ${iconColor}`} />
             <span className="font-medium text-sm md:text-base">Logout</span>
           </button>
